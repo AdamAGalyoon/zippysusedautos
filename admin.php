@@ -32,10 +32,8 @@ $vehicles = $vehiclesStmt->fetchAll(PDO::FETCH_ASSOC);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Zippy Admin</title>
-    <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        /* Custom CSS styles */
         body {
             padding: 20px;
         }
@@ -54,7 +52,7 @@ $vehicles = $vehiclesStmt->fetchAll(PDO::FETCH_ASSOC);
 <body>
     <h1>Zippy Admin</h1>
 
- 
+
     <!-- List of Vehicles with Delete Option -->
     <h2>List of Vehicles</h2>
     <table>
@@ -83,6 +81,10 @@ $vehicles = $vehiclesStmt->fetchAll(PDO::FETCH_ASSOC);
     <!-- Link to Add New Vehicle -->
     <a href="admin/add_vehicle.php" class="btn btn-success mt-3">Click here to add a vehicle</a>
     
-    <?php include 'admin_footer.php';  ?>
+    <ul>
+        <li><a href="admin/classes.php">Manage Classes</a></li>
+        <li><a href="admin/types.php">Manage Types</a></li>
+        <li><a href="admin/makes.php">Manage Makes</a></li>
+    </ul>
 </body>
 </html>
