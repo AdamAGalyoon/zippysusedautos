@@ -16,7 +16,6 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])
     $deleteStmt = $conn->prepare("DELETE FROM vehicles WHERE vehicle_id = :id");
     $deleteStmt->bindParam(':id', $id, PDO::PARAM_INT);
     $deleteStmt->execute();
-    // Redirect back to admin page after deletion
     header("Location: admin.php");
     exit();
 }
