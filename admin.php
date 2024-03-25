@@ -1,6 +1,14 @@
 <?php
 
-require_once 'config.php';
+// Database connection details
+$db_host = 'localhost';
+$db_name = 'zippyusedautos';
+$db_user = 'root';
+$db_pass = '';
+
+// Establish a database connection
+$conn = new PDO("mysql:host=$db_host;dbname=$db_name", $db_user, $db_pass);
+$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 // Delete vehicle if delete request is received
 if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])) {
@@ -8,11 +16,12 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])
     $deleteStmt = $conn->prepare("DELETE FROM vehicles WHERE vehicle_id = :id");
     $deleteStmt->bindParam(':id', $id, PDO::PARAM_INT);
     $deleteStmt->execute();
+    // Redirect back to admin page after deletion
     header("Location: admin.php");
     exit();
 }
 
-// Fetch vehicles for display
+// Fetch all vehicles for display
 $vehiclesStmt = $conn->query("SELECT v.vehicle_id, v.year, m.make_name AS make, v.model, t.type_name AS type, c.class_name AS class, v.price FROM vehicles v JOIN makes m ON v.make_id = m.make_id JOIN types t ON v.type_id = t.type_id JOIN classes c ON v.class_id = c.class_id");
 $vehicles = $vehiclesStmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
@@ -26,6 +35,7 @@ $vehicles = $vehiclesStmt->fetchAll(PDO::FETCH_ASSOC);
     <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
+        /* Custom CSS styles */
         body {
             padding: 20px;
         }
@@ -44,13 +54,7 @@ $vehicles = $vehiclesStmt->fetchAll(PDO::FETCH_ASSOC);
 <body>
     <h1>Zippy Admin</h1>
 
-    <!-- All Makes, Types, Classes Links -->
-    <div>
-        <a href="admin/makes.php" class="btn btn-primary">View/Edit Vehicle Makes</a>
-        <a href="admin/types.php" class="btn btn-primary">View/Edit Vehicle Types</a>
-        <a href="admin/classes.php" class="btn btn-primary">View/Edit Vehicle Classes</a>
-    </div>
-
+ 
     <!-- List of Vehicles with Delete Option -->
     <h2>List of Vehicles</h2>
     <table>
@@ -79,5 +83,6 @@ $vehicles = $vehiclesStmt->fetchAll(PDO::FETCH_ASSOC);
     <!-- Link to Add New Vehicle -->
     <a href="admin/add_vehicle.php" class="btn btn-success mt-3">Click here to add a vehicle</a>
     
+    <?php include 'admin_footer.php';  ?>
 </body>
 </html>
