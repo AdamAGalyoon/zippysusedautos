@@ -1,12 +1,11 @@
 <?php
 
-// Database connection details
 $db_host = 'localhost';
 $db_name = 'zippyusedautos';
 $db_user = 'root';
 $db_pass = '';
 
-// Establish a database connection
+// Establish database connection
 $conn = new PDO("mysql:host=$db_host;dbname=$db_name", $db_user, $db_pass);
 $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
