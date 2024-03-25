@@ -1,13 +1,8 @@
 <?php
-$db_host = 'localhost';
-$db_name = 'zippyusedautos';
-$db_user = 'root';
-$db_pass = '';
+require_once 'config.php';
 
-$conn = new PDO("mysql:host=$db_host;dbname=$db_name", $db_user, $db_pass);
-$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-$sort_by = isset($_GET['sort']) ? $_GET['sort'] : 'price'; 
+// Initialize filter variables and default values
+$sort_by = isset($_GET['sort']) ? $_GET['sort'] : 'price';  // Default sorting by price
 $filter_make = isset($_GET['make']) ? $_GET['make'] : '';
 $filter_type = isset($_GET['type']) ? $_GET['type'] : '';
 $filter_class = isset($_GET['class']) ? $_GET['class'] : '';
@@ -32,12 +27,11 @@ if (!empty($filter_class)) {
     $conditions[] = "v.class_id = :class_id";
 }
 
-// Add conditions to the SQL query
 if (!empty($conditions)) {
     $sql .= " WHERE " . implode(" AND ", $conditions);
 }
 
-// Add sorting to the SQL query
+// Add sorting to SQL query
 $sql .= " ORDER BY ";
 if ($sort_by == 'year') {
     $sql .= "v.year DESC";
@@ -45,7 +39,7 @@ if ($sort_by == 'year') {
     $sql .= "v.price DESC";
 }
 
-// Prepare and execute the SQL query
+// Prepare and executeSQL query
 $stmt = $conn->prepare($sql);
 
 if (!empty($filter_make)) {
@@ -68,9 +62,10 @@ $vehicles = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Zippy Used Autos</title>
-    <!-- Bootstrap CSS Styling -->
+    <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
+        /* Custom CSS styles */
         body {
             padding: 20px;
         }
