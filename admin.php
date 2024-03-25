@@ -1,5 +1,4 @@
 <?php
-
 // Database connection details
 $db_host = 'localhost';
 $db_name = 'zippyusedautos';
@@ -10,20 +9,43 @@ $db_pass = '';
 $conn = new PDO("mysql:host=$db_host;dbname=$db_name", $db_user, $db_pass);
 $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-// Delete vehicle if delete request is received
+// Check if delete request is received
 if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])) {
     $id = $_GET['id'];
-    $deleteStmt = $conn->prepare("DELETE FROM vehicles WHERE vehicle_id = :id");
+    $deleteStmt = $conn->prepare("DELETE FROM classes WHERE class_id = :id");
     $deleteStmt->bindParam(':id', $id, PDO::PARAM_INT);
     $deleteStmt->execute();
-    // Redirect back to admin page after deletion
-    header("Location: admin.php");
+    // Redirect back to classes page after deletion
+    header("Location: classes.php");
     exit();
 }
 
-// Fetch all vehicles for display
-$vehiclesStmt = $conn->query("SELECT v.vehicle_id, v.year, m.make_name AS make, v.model, t.type_name AS type, c.class_name AS class, v.price FROM vehicles v JOIN makes m ON v.make_id = m.make_id JOIN types t ON v.type_id = t.type_id JOIN classes c ON v.class_id = c.class_id");
-$vehicles = $vehiclesStmt->fetchAll(PDO::FETCH_ASSOC);
+// Handle form submission to add new class
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    try {
+        // Retrieve form data
+        $className = $_POST['name'];
+
+        // Insert new class into database
+        $insertStmt = $conn->prepare("INSERT INTO classes (class_name) VALUES (:name)");
+        $insertStmt->bindParam(':name', $className, PDO::PARAM_STR);
+        $insertStmt->execute();
+
+        // Check if the insertion was successful
+        $rowCount = $insertStmt->rowCount();
+        if ($rowCount > 0) {
+            echo "Class added successfully.";
+        } else {
+            echo "Error: Class not added.";
+        }
+    } catch (PDOException $e) {
+        echo "Error: " . $e->getMessage(); // Display the error message
+    }
+}
+
+// Fetch all classes for display
+$stmt = $conn->query("SELECT * FROM classes");
+$classes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <!DOCTYPE html>
@@ -31,60 +53,42 @@ $vehicles = $vehiclesStmt->fetchAll(PDO::FETCH_ASSOC);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zippy Admin</title>
+    <title>Zippy Admin - Vehicle Classes</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            padding: 20px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        th, td {
-            border: 1px solid #ccc;
-            padding: 10px;
-            text-align: center;
-        }
-    </style>
 </head>
 <body>
-    <h1>Zippy Admin</h1>
-
-
-    <!-- List of Vehicles with Delete Option -->
-    <h2>List of Vehicles</h2>
-    <table>
-        <tr>
-            <th>Year</th>
-            <th>Make</th>
-            <th>Model</th>
-            <th>Type</th>
-            <th>Class</th>
-            <th>Price</th>
-            <th>Action</th>
-        </tr>
-        <?php foreach ($vehicles as $vehicle) : ?>
-            <tr>
-                <td><?= $vehicle['year'] ?></td>
-                <td><?= $vehicle['make'] ?></td>
-                <td><?= $vehicle['model'] ?></td>
-                <td><?= $vehicle['type'] ?></td>
-                <td><?= $vehicle['class'] ?></td>
-                <td>$<?= number_format($vehicle['price'], 2) ?></td>
-                <td><a href="?action=delete&id=<?= $vehicle['vehicle_id'] ?>" class="btn btn-danger">Remove</a></td>
-            </tr>
-        <?php endforeach; ?>
-    </table>
-
-    <!-- Link to Add New Vehicle -->
-    <a href="admin/add_vehicle.php" class="btn btn-success mt-3">Click here to add a vehicle</a>
-    
-    <ul>
-        <li><a href="admin/classes.php">Manage Classes</a></li>
-        <li><a href="admin/types.php">Manage Types</a></li>
-        <li><a href="admin/makes.php">Manage Makes</a></li>
-    </ul>
+    <div class="container">
+        <h1>Zippy Admin</h1>
+        <h2>Vehicle Class List</h2>
+        <form method="POST">
+            <div class="form-group">
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Add Class</button>
+        </form>
+        <hr>
+        <h3>View Full Vehicle Class List</h3>
+        <!-- Display the list of classes from the database -->
+        <?php if (count($classes) > 0): ?>
+            <table class="table">
+                <tr>
+                    <th>Name</th>
+                    <th>Remove</th>
+                </tr>
+                <?php foreach ($classes as $class): ?>
+                    <tr>
+                        <td><?= $class['class_name'] ?></td>
+                        <td>
+                            <a href="?action=delete&id=<?= $class['class_id'] ?>" onclick="return confirm('Are you sure you want to delete this item?')" class="btn btn-danger">Remove</a>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            </table>
+        <?php else: ?>
+            <p>No classes found.</p>
+        <?php endif; ?>
+        <a href="admin.php" class="btn btn-secondary mt-3">Back to Admin</a>
+    </div>
 </body>
 </html>
