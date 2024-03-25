@@ -1,4 +1,4 @@
- <?php
+<?php
 $db_host = 'localhost';
 $db_name = 'zippyusedautos';
 $db_user = 'root';
@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             echo "Error: Vehicle not added.";
         }
     } catch (PDOException $e) {
-        echo "Error: " . $e->getMessage(); // Display error message
+        echo "Error: " . $e->getMessage(); // Display the error message
     }
 }
 ?>
@@ -52,7 +52,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
     <div class="container">
     <h1>Zippy Admin</h1>
-        <!--form-->
         <h2>Add Vehicle</h2>
         <form method="POST">
             <div class="form-group">
@@ -81,8 +80,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <button type="submit" class="btn btn-primary">Add Vehicle</button>
         </form>
-        <a href="applications/XAMPP/htdocs/zippysusedauto/admin.php" class="btn btn-secondary mt-3">Back to Admin</a>
+        <a href="admin.php" class="btn btn-secondary mt-3">Back to Admin</a>
     </div>
 </body>
 </html>
-
